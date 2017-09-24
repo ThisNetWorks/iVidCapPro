@@ -1,0 +1,25 @@
+-x
+objective-c++
+-arch
+x86_64
+-std=gnu++11
+-stdlib=libc++
+-fobjc-arc
+-fpascal-strings
+-Os
+-isysroot
+/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator9.3.sdk
+-fasm-blocks
+-mios-simulator-version-min=5.0
+-g
+-fobjc-abi-version=2
+-fobjc-legacy-dispatch
+-iquote
+-iquote
+-I/Users/malveka/eOe/iVidCapPro/Git_Repo/iVidCapProLib/DerivedData/iVidCapPro/Build/Products/Release-iphonesimulator/include
+-F/Users/malveka/eOe/iVidCapPro/Git_Repo/iVidCapProLib/DerivedData/iVidCapPro/Build/Products/Release-iphonesimulator
+-fno-objc-arc
+x86_64-apple-darwin15.5.0
+"4.2.1 Compatible Apple LLVM 7.3.0 (clang-703.0.31)"
+SDK_PRODUCT_BUILD_VERSION=13E230
+13E230

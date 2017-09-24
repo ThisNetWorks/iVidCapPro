@@ -32,3 +32,8 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+iVidCapProUnityProject/Library
+iVidCapProUnityProject/Temp
+iVidCapProUnityProject/Obj
+iVidCapProUnityProject/Build
+iVidCapProUnityProject/Builds

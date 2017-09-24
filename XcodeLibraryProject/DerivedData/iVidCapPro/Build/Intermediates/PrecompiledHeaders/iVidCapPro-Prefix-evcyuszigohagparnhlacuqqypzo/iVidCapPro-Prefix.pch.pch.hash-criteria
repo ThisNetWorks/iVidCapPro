@@ -1,0 +1,23 @@
+-x
+objective-c++
+-arch
+armv7
+-std=gnu++11
+-stdlib=libc++
+-fobjc-arc
+-fpascal-strings
+-O0
+-DDEBUG=1
+-isysroot
+/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.1.sdk
+-miphoneos-version-min=5.0
+-g
+-fembed-bitcode-marker
+-iquote
+-iquote
+-I/Users/malveka/eOe/iVidCapPro/Git_Repo/iVidCapProLib/DerivedData/iVidCapPro/Build/Products/Debug-iphoneos/include
+-F/Users/malveka/eOe/iVidCapPro/Git_Repo/iVidCapProLib/DerivedData/iVidCapPro/Build/Products/Debug-iphoneos
+arm-apple-darwin15.6.0
+"4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.42.1)"
+SDK_PRODUCT_BUILD_VERSION=14B72
+14B72
