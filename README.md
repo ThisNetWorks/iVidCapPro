@@ -19,8 +19,7 @@ There will be a new release in the near future with bitcode support, and some mi
 
    The [iVidCapProUnityProject folder](https://github.com/ThisNetWorks/iVidCapPro/tree/master/iVidCapProUnityProject) contains all the C# Unity code you need to get the plugin running, and the binary for v1.7.
    
-   The [XcodeLibraryProject folder]
-   (https://github.com/ThisNetWorks/iVidCapPro/tree/master/XcodeLibraryProject) can get you building the binary.
+   The [XcodeLibraryProject folder](https://github.com/ThisNetWorks/iVidCapPro/tree/master/XcodeLibraryProject) can get you building the binary.
 
 # Features
 
