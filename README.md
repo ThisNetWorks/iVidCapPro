@@ -21,7 +21,7 @@ There will be a new release in the near future with bitcode support, and some mi
    
    The [XcodeLibraryProject folder](https://github.com/ThisNetWorks/iVidCapPro/tree/master/XcodeLibraryProject) can get you building the binary.
 
-* For Unity 2017.x you'll need to add the following code the the UnityAppController.mm file, this will be fixed in a later release
+* For Unity 2017.x you'll need to add the following code the the UnityAppController.mm file - this will be fixed in a later release.
 
 ```
 extern "C" EAGLContext* ivcp_UnityGetContext()
