@@ -3,16 +3,19 @@ iVidCapPro is a plugin that enables Unity, to capture video and audio from your 
 
 This is the offical Github repository as the project has migrated away from [Eccentric Orbits](http://eccentric-orbits.com/eoe/site/ividcappro-unity-plugin/) - refer [Announcement](http://eccentric-orbits.com/eoe/site/2017/05/29/announcement-ividcappro-availability-ends/)
 
-In cooperation with [Eccentric Orbits] we've made the plugin available through an open source github project. Please bear with us while migrate document and information over. This is now a community plugin so please feel free to continue developing the project, we are accepting pull requests. There will be a new release in the near future with bitcode support, and some minor fixes.
+In cooperation with [Eccentric Orbits](http://eccentric-orbits.com/eoe/site/ividcappro-unity-plugin/) we've made the plugin available as an open source github project. Please bear with us while migrate document and information over. This is now a community plugin so please feel free to continue developing the project, we are accepting pull requests. There will be a new release in the near future with bitcode support, and some minor tweaks.
 
 # Installation
 
-You can install the Unity package from the [Release Page](https://github.com/ThisNetWorks/iVidCapPro/releases/latest)
+* You can install the Unity package from the [Releases Page](https://github.com/ThisNetWorks/iVidCapPro/releases/latest)
 
-And you can download the Xcode project from the [Release Page](https://github.com/ThisNetWorks/iVidCapPro/releases/latest)
+* You can download the Xcode project from the [Releases Page](https://github.com/ThisNetWorks/iVidCapPro/releases/latest)
 
-Alternativally clone the project from github, make some improvements, and put in a pull request! 
-The iVidCapProUnityProject folder contains all the C# Unity code you need to get the plugin running, and the binary for v1.7, and the XcodeLibraryProject can get you rebuilding the binary.
+* Alternativally clone the project from github, make some improvements, and put in a pull request! 
+
+   The [iVidCapProUnityProject](https://github.com/ThisNetWorks/iVidCapPro/tree/master/XcodeLibraryProject) folder contains all the C# Unity code you need to get the plugin running, and the binary for v1.7.
+   
+   The [XcodeLibraryProject](https://github.com/ThisNetWorks/iVidCapPro/tree/master/iVidCapProUnityProject) can get you building the binary.
 
 # Features
 
