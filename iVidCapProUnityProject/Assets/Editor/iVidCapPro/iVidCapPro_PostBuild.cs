@@ -34,6 +34,8 @@ IN THE SOFTWARE.
    				 Use new UnityGetMainScreenContextGLES function to fetch
    				 the GL context. Change is necessary as of 4.6.2p2 to be
    				 compatible with new Metal graphics backend.
+   - 05 Oct 17 - Update for Unity 2017. Rearrange string.compare code, was 
+                 not working for 2017, some v4.2 and prior version may not work					
    --------------------------------------------------------------------- */
 
 using UnityEngine;
@@ -54,7 +56,7 @@ public class iVidCapPro_PostBuild {
 		// For versions <  4.2 it's AppController.mm
 		// For versions >= 4.2 it's UnityAppController.mm
 		string appControllerName;
-		if (string.Compare(Application.unityVersion,"4.2") == -1) 
+		if (string.Compare(Application.unityVersion,"4.2") != -1) 
 			appControllerName = "AppController.mm";
 		else
 			appControllerName = "UnityAppController.mm";
@@ -124,7 +126,9 @@ public class iVidCapPro_PostBuild {
 		// Update AppController data string.
 		// Set the substitution string based on the Unity Version.
 		string substString = "";
-		if (string.Compare(Application.unityVersion,"4.1") == -1) 
+        if (Application.unityVersion.Contains("2017")){
+            substString = contextFunction_4;		
+		} else if (string.Compare(Application.unityVersion,"4.1") == -1) 
 			substString = contextFunction_1 + insertionPointPattern;
 		else if (string.Compare(Application.unityVersion,"4.5") == -1) 
 			substString = contextFunction_2 + insertionPointPattern;
@@ -135,27 +139,25 @@ public class iVidCapPro_PostBuild {
 			
 		// Check to see if AppController already contains our function.
 	    if (!Regex.IsMatch(fileString, @"ivcp_UnityGetContext")) {
-			// We need to add the function.  Look for our insertion point.
-			if (string.Compare(Application.unityVersion,"4.5") == -1) {
-				// For versions prior to 4.5, we're looking for a specific insertion point.
-				if (Regex.IsMatch (fileString, insertionPointPattern))  {
-					UnityEngine.Debug.Log("iVidCapPro_PostBuild: Insertion point found. Updating " + appControllerName + "."); 
-					fileString = Regex.Replace(fileString, insertionPointPattern, substString);
-				 
-					// Write modified AppController back to file.
-					WriteStringIntoFile(fileString, appControllerPath);
-					
-				} else {
-					// Couldn't find insertion point.
-					UnityEngine.Debug.LogError("iVidCapPro_PostBuild ERROR: Could not find insertion point.");
-				}
-			} else {
-				// For 4.5 and later, just add our function at the end of the file.
-				fileString += substString;
-
-				// Write modified AppController back to file.
-				WriteStringIntoFile(fileString, appControllerPath);
-			}
+            // We need to add the function.  Look for our insertion point.
+            // For versions prior to 4.5, we're looking for a specific insertion point.
+            if (Regex.IsMatch(fileString, insertionPointPattern))
+            {
+                UnityEngine.Debug.Log("iVidCapPro_PostBuild: Insertion point found. Updating " + appControllerName + "."); 
+                fileString = Regex.Replace(fileString, insertionPointPattern, substString);
+                           
+                // Write modified AppController back to file.
+                WriteStringIntoFile(fileString, appControllerPath);
+            }
+            else
+            {
+                UnityEngine.Debug.Log("iVidCapPro_PostBuild: Insertion point not found. Writing to end of file " + appControllerName + "."); 
+                // For 4.5 and later, just add our function at the end of the file.
+                fileString += substString;
+            
+                // Write modified AppController back to file.
+                WriteStringIntoFile(fileString, appControllerPath);
+            }
 		} else {
 			// The function is already present.  No action needed.
 			UnityEngine.Debug.Log("iVidCapPro_PostBuild: ivcp_UnityGetContext function already present. Nothing done."); 
