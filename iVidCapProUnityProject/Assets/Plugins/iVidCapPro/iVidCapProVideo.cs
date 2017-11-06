@@ -87,9 +87,13 @@ public class iVidCapProVideo : MonoBehaviour {
 	
 	// A local reference to the target rendertexture.
 	private RenderTexture rt = null;
-	
-	// The rectangle that defines the viewport to be captured to the rendertexture.
+
+	// The rectangle that defines the custom recordign area.
 	private Rect captureRect;
+
+	// The material which is used to resample the screen texture 
+	// to the size of the custom recording area.
+	private Material blitMat;
 	
 	// Whether or not recording from this camera is currently in progress.
 	private bool isRecording = false;
@@ -108,31 +112,33 @@ public class iVidCapProVideo : MonoBehaviour {
 				" and use the iVidCapPro SetCustomRenderTexture method instead. Failure to do so may " +
 				"result in a large framerate penalty.");
 		}
+
+		blitMat = new Material( Shader.Find("Custom/ividcappro") );
 	}
-	
-	/// <summary>
-	/// Set the capture viewport of the camera on the rendertexture.
-	/// Ordinarily you don't need to call this, as it is set automatically
-	/// at the start of each recording session.  If, however, you change
-	/// the viewport of the camera during the recording session, you need
-	/// to call this function each time the camera viewport is updated.
-	/// </summary>
-	public void SetCaptureViewport() {
-		
-		
-		Rect cameraRect = videoCam.rect;
-		
-		captureRect.x = cameraRect.x * rt.width;
-		captureRect.y = cameraRect.y * rt.height;
-		captureRect.width = cameraRect.width * rt.width;
-		captureRect.height = cameraRect.height * rt.height;
-		
-		if (isDedicated) {
-			// Set the aspect ratio of the camera to match the render texture.
-			videoCam.aspect = ((float)rt.width)/((float)rt.height);
-		}	
+
+	/* ------------------------------------------------------------------------
+	   -- SetCaptureRect --
+	   
+       Use this function when needing to record only a portion of the screen.
+       Function takes a rect with pixels screen coordinates.
+	   ------------------------------------------------------------------------ */
+	public void SetCaptureRect(Rect rect) {
+		captureRect.x = rect.x / (float)Screen.width;
+		captureRect.y = rect.y / (float)Screen.height;
+		captureRect.width = rect.width / (float)Screen.width;
+		captureRect.height = rect.height / (float)Screen.height;
 	}
-	
+
+	/* ------------------------------------------------------------------------
+	   -- SetCaptureRectWithNormalisedScreenCoordinates --
+	   
+       Use this function when needing to record only a portion of the screen.
+       Function takes a rect with normalised screen coordinates.
+	   ------------------------------------------------------------------------ */
+	public void SetCaptureRectWithNormalisedScreenCoordinates(Rect rect) {
+		captureRect = rect;
+	}
+
 	/* ------------------------------------------------------------------------
 	   -- SetRenderTexture --
 	   
@@ -192,18 +198,27 @@ public class iVidCapProVideo : MonoBehaviour {
 			// 08-Nov-2014 Nope - It's necessary after all. It's required for the case when
 			// there are multiple recording cameras. 
 			RenderTexture.active = rt;
+
+			Rect rectZero = new Rect ();
+			bool bCustomCaptureRect = (captureRect.Equals (rectZero) == false);
+			if (bCustomCaptureRect) {
+
+				float cornerX1 = captureRect.x;
+				float cornerY1 = captureRect.y;
+				float cornerX2 = captureRect.x + captureRect.width;
+				float cornerY2 = captureRect.y + captureRect.height;
+
+				blitMat.SetFloat ("_CornerX1", cornerX1);
+				blitMat.SetFloat ("_CornerY1", cornerY1);
+				blitMat.SetFloat ("_CornerX2", cornerX2);
+				blitMat.SetFloat ("_CornerY2", cornerY2);
+
+				Graphics.Blit (source, rt, blitMat);
 			
-			// We want to honor the size and location on the screen of the camera rendering
-			// rectangle.  These GL routines allow us to restrict the rendering viewport to
-			// be that of the camera when we do the blit.
-			GL.PushMatrix();
-    		GL.LoadPixelMatrix();
-			GL.Viewport(captureRect);
-			
-			Graphics.Blit (source, rt);
-			
-			// Restore the modelview and projection matrices.
-			GL.PopMatrix();
+			} else {
+
+				Graphics.Blit (source, rt);
+			}
 
 			// 17-Aug-2014 This appears to be unnecessary.
 			// 08-Nov-2014 Nope - It's necessary after all. See above.
