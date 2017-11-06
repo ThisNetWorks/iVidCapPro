@@ -1079,7 +1079,6 @@ public class iVidCapPro : MonoBehaviour {
 		foreach (iVidCapProVideo videoCam in videoCameras) {
 			//videoCam.InitSession();
 			videoCam.SetRenderTexture(rt);
-			videoCam.SetCaptureViewport();
 			videoCam.SetIsRecording(true);
 		}
 		return sessionStatus;
