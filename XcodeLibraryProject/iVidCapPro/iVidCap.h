@@ -46,7 +46,8 @@ static int Demo_FrameLimit = 10 * 30;               // set later based on actual
 enum AudioCapture {
     No_Audio = 0,
     Audio = 1,
-    Audio_Plus_Mic = 2
+    Audio_Plus_Mic = 2,
+    Audio_Mic = 3
 };
 
 // This enum must be kept in sync with the VideoDisposition enum in iVidCap.cs.
@@ -75,7 +76,7 @@ enum VideoCaptureFramerateLock {
     Throttled = 2
 };
 
-@interface ivcp_VideoRecorder : NSObject {
+@interface ivcp_VideoRecorder : NSObject <AVAudioRecorderDelegate> {
 
     
     // Video attributes.
@@ -123,6 +124,11 @@ enum VideoCaptureFramerateLock {
     AVAsset* userAudioAsset1;
     AVAsset* userAudioAsset2;
     AVAsset* mixedAudioAsset;
+    
+    // Mic audio recording.
+    AVAudioRecorder * micAudioRecorder;
+    BOOL bMicAudioRecordFinished;
+    BOOL bMovieWriterFinished;
     
     // Debug.
     BOOL showDebug;
