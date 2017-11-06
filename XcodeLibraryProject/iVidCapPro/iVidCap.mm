@@ -1322,6 +1322,50 @@ static SessionStatusCode vr_sessionStatus;
         NSLog(@"iVidCapPro - exportDidFinish: exiting.");
 }
 
+- (void)micAudioRecorderStart {
+    NSError * error = nil;
+
+    AVAudioSession * audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory :AVAudioSessionCategoryPlayAndRecord error:&error];
+    if(error){
+        NSLog(@"audioSession: %@ %li %@", [error domain], [error code], [[error userInfo] description]);
+        return;
+    }
+    [audioSession setActive:YES error:&error];
+    if(error){
+        NSLog(@"audioSession: %@ %li %@", [error domain], [error code], [[error userInfo] description]);
+        return;
+    }
+    
+    NSMutableDictionary * recordSetting = [NSMutableDictionary dictionary];
+    [recordSetting setValue :[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
+    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
+    [recordSetting setValue :[NSNumber numberWithInt:16] forKey:AVLinearPCMBitDepthKey];
+    [recordSetting setValue :[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsBigEndianKey];
+    [recordSetting setValue :[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsFloatKey];
+    
+    NSURL * url = [self getDocumentsFileURL:capturedAudioFileName];
+    micAudioRecorder = [[ AVAudioRecorder alloc] initWithURL:url settings:recordSetting error:&error];
+    if(error){
+        NSLog(@"micAudioRecorder: %@ %li %@", [error domain], [error code], [[error userInfo] description]);
+        return;
+    }
+    
+    [micAudioRecorder setDelegate:self];
+    [micAudioRecorder record];
+}
+
+- (void)micAudioRecorderStop {
+    [micAudioRecorder stop];
+}
+
+- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder
+                           successfully:(BOOL)flag {
+    
+    NSLog (@"audioRecorderDidFinishRecording:successfully:");
+}
+
 @end
 
 
