@@ -495,7 +495,13 @@ public class iVidCapPro : MonoBehaviour {
 		/// <summary>
 		/// Audio from the scene and microphone will be recorded in addition to video.
 		/// </summary>
-		Audio_Plus_Mic = 2
+		Audio_Plus_Mic = 2,
+
+
+		/// <summary>
+		/// Audio from the microphone only will be recorded in addition to video.
+		/// </summary>
+		Audio_Mic = 3
 	}
 	
 	/// <summary>
