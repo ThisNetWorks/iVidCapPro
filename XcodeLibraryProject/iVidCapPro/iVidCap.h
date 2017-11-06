@@ -127,6 +127,8 @@ enum VideoCaptureFramerateLock {
     
     // Mic audio recording.
     AVAudioRecorder * micAudioRecorder;
+    BOOL bMicAudioRecordFinished;
+    BOOL bMovieWriterFinished;
     
     // Debug.
     BOOL showDebug;

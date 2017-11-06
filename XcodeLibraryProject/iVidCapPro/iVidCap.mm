@@ -310,6 +310,8 @@ static SessionStatusCode vr_sessionStatus;
         finalVideoFileName = nil;
     }
     
+    [self micAudioRecorderKill];
+    
     strcpy(iVidCapGameObject, "");
 
 	[super dealloc];
@@ -587,11 +589,17 @@ static SessionStatusCode vr_sessionStatus;
     glFinish();
     [EAGLContext setCurrentContext: unity_context];
     
+    if(captureAudio == Audio_Mic) {
+        [self micAudioRecorderStart];
+        bMicAudioRecordFinished = NO;
+    }
+    
     // Set the video recording start time.
     recordStartTime = [[NSDate alloc] init];
     [recordStartTime retain];
     
     isRecording = true;
+    bMovieWriterFinished = NO;
     
     if (showDebug)
         NSLog(@"iVidCapPro - beginRecordingSession exiting.");
@@ -625,9 +633,29 @@ static SessionStatusCode vr_sessionStatus;
     // When the movie writer is finished, we'll continue completing the recording
     // session.
     [movieWriter finishRecordingWithCompletionHandler:^{
-        [self movieWriterCompleteHandler];}];
+        bMovieWriterFinished = YES;
+        [self checkAllRecordingsAreFinished];
+    }];
+    
+    if(captureAudio == Audio_Mic) {
+        [self micAudioRecorderStop];
+    }
     
     return 0;
+}
+
+- (void)checkAllRecordingsAreFinished {
+
+    BOOL bFinaliseVideo = YES;
+    bFinaliseVideo = bFinaliseVideo && bMovieWriterFinished;
+    if(captureAudio == Audio_Mic) {
+        bFinaliseVideo = bFinaliseVideo && bMicAudioRecordFinished;
+    }
+    if(bFinaliseVideo == NO) {
+        return; // still waiting on either the video or audio to finish before they can be mixed together.
+    }
+
+    [self movieWriterCompleteHandler];
 }
 
 // This is the continuation of endRecordingSession.
@@ -655,7 +683,7 @@ static SessionStatusCode vr_sessionStatus;
         if (showDebug) {
             NSLog(@"iVidCapPro - endRecordingSession tempVideoFileName=%@\n", tempVideoFileName);
             NSLog(@"iVidCapPro - endRecordingSession finalVideoFileName=%@\n", finalVideoFileName);
-            if (captureAudio == Audio || captureAudio == Audio_Plus_Mic)
+            if (captureAudio == Audio || captureAudio == Audio_Plus_Mic || captureAudio == Audio_Mic)
                 NSLog(@"iVidCapPro - endRecordingSession capturedAudioFileName=%@\n", capturedAudioFileName);
             else
                 NSLog(@"iVidCapPro - endRecordingSession capturedAudioFileName=not in use\n");
@@ -669,7 +697,7 @@ static SessionStatusCode vr_sessionStatus;
                 NSLog(@"iVidCapPro - endRecordingSession userAudioFileName2=not in use\n");
         }
         
-        if (captureAudio == Audio || captureAudio == Audio_Plus_Mic || userAudioFile1 != nil || userAudioFile2 != nil) {
+        if (captureAudio == Audio || captureAudio == Audio_Plus_Mic || captureAudio == Audio_Mic || userAudioFile1 != nil || userAudioFile2 != nil) {
             // We have audio.  Mix the audio and video.
             [self createVideoWithAudio];
             
@@ -711,7 +739,7 @@ static SessionStatusCode vr_sessionStatus;
     NSURL* userAudioFileURL2 = nil;
     NSURL* capturedAudioFileURL = nil;
     
-    if (captureAudio == Audio || captureAudio == Audio_Plus_Mic) {
+    if (captureAudio == Audio || captureAudio == Audio_Plus_Mic || captureAudio == Audio_Mic) {
         // We're capturing audio from scene.  Get the URL for the file.
         capturedAudioFileURL = [self getDocumentsFileURL:capturedAudioFileName];
     }
@@ -1322,11 +1350,25 @@ static SessionStatusCode vr_sessionStatus;
         NSLog(@"iVidCapPro - exportDidFinish: exiting.");
 }
 
+- (void)micAudioRecorderKill {
+    if(micAudioRecorder == nil) {
+        return;
+    }
+    [micAudioRecorder stop];
+    [micAudioRecorder setDelegate:nil];
+    [micAudioRecorder release];
+    micAudioRecorder = nil;
+}
+
 - (void)micAudioRecorderStart {
+    [self micAudioRecorderKill];
+
     NSError * error = nil;
 
     AVAudioSession * audioSession = [AVAudioSession sharedInstance];
-    [audioSession setCategory :AVAudioSessionCategoryPlayAndRecord error:&error];
+    [audioSession setCategory: AVAudioSessionCategoryPlayAndRecord
+                  withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker
+                        error: &error];
     if(error){
         NSLog(@"audioSession: %@ %li %@", [error domain], [error code], [[error userInfo] description]);
         return;
@@ -1363,7 +1405,8 @@ static SessionStatusCode vr_sessionStatus;
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder
                            successfully:(BOOL)flag {
     
-    NSLog (@"audioRecorderDidFinishRecording:successfully:");
+    bMicAudioRecordFinished = YES;
+    [self checkAllRecordingsAreFinished];
 }
 
 @end
